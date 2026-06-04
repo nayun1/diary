@@ -8,6 +8,13 @@
     "start": "node server.mjs",
     "dev": "node server.mjs"
   },
+  "files": [
+    "server.mjs",
+    "index.html",
+    "style.css",
+    "app.js",
+    ".env.local"
+  ],
   "keywords": [
     "diary",
     "emotion",
