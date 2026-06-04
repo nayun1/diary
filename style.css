@@ -1,0 +1,575 @@
+/* ==================== 기본 스타일 ==================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', 'Malgun Gothic', '맑은 고딕', sans-serif;
+    background-color: rgb(245, 237, 227);
+    color: #333;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+html, body {
+    scroll-behavior: smooth;
+}
+
+/* ==================== 컨테이너 ==================== */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+/* ==================== 헤더 ==================== */
+.header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem 0;
+    animation: fadeInDown 0.6s ease-out;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a6f, #f59e0b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #888;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+}
+
+/* API 상태 표시 */
+.api-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #ffa500;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.status-dot.ready {
+    background-color: #4caf50;
+    animation: none;
+}
+
+.status-dot.error {
+    background-color: #ff6b6b;
+    animation: none;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* ==================== 메인 콘텐츠 ==================== */
+.main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+/* ==================== 일기 입력 섹션 ==================== */
+.diary-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    animation: fadeInUp 0.6s ease-out 0.1s backwards;
+}
+
+.input-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+}
+
+.diary-input {
+    width: 100%;
+    padding: 1.5rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 50px;
+    background-color: #fff;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    resize: vertical;
+    min-height: 120px;
+    max-height: 200px;
+    font-family: inherit;
+    color: #333;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.diary-input::placeholder {
+    color: #bbb;
+}
+
+.diary-input:focus {
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+.char-count {
+    position: absolute;
+    bottom: 1rem;
+    right: 1.5rem;
+    font-size: 0.85rem;
+    color: #aaa;
+    pointer-events: none;
+}
+
+/* ==================== 버튼 ==================== */
+.submit-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 12px 40px rgba(255, 107, 107, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.submit-button:hover:not(:disabled) {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 50px rgba(255, 107, 107, 0.4);
+}
+
+.submit-button:active:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+.submit-button:disabled {
+    opacity: 0.8;
+    cursor: not-allowed;
+}
+
+#btnText {
+    position: relative;
+    z-index: 1;
+    transition: opacity 0.3s ease;
+}
+
+/* ==================== 로딩 스피너 ==================== */
+.spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    position: absolute;
+}
+
+.spinner.hidden {
+    display: none;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ==================== 분석 결과 카드 ==================== */
+.result-card {
+    width: 100%;
+    max-width: 500px;
+    background: white;
+    border-radius: 50px;
+    padding: 2rem;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.1);
+    animation: slideUp 0.5s ease-out;
+    position: relative;
+}
+
+.result-card.hidden {
+    display: none;
+}
+
+.emotion-result {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.emotion-icon {
+    font-size: 4rem;
+    min-width: 80px;
+    text-align: center;
+    animation: bounce 0.6s ease-out;
+}
+
+.result-details {
+    flex: 1;
+}
+
+.result-details h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #ff6b6b;
+}
+
+.temperature-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.temp-label {
+    font-size: 0.9rem;
+    color: #888;
+}
+
+.temp-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #f59e0b;
+}
+
+.emotion-desc {
+    font-size: 0.95rem;
+    color: #666;
+    font-style: italic;
+}
+
+.close-result {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background-color: #f0f0f0;
+    color: #333;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.close-result:hover {
+    background-color: #e0e0e0;
+    transform: rotate(90deg);
+}
+
+/* ==================== 차트 섹션 ==================== */
+.chart-section {
+    animation: fadeInUp 0.6s ease-out 0.2s backwards;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.chart-header h2 {
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.month-selector {
+    padding: 0.8rem 1.5rem;
+    border-radius: 50px;
+    border: none;
+    background-color: white;
+    color: #333;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.month-selector:hover {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+}
+
+.month-selector:focus {
+    outline: none;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.chart-container {
+    background: white;
+    border-radius: 50px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chart-wrapper {
+    width: 100%;
+    height: 300px;
+}
+
+.empty-state {
+    text-align: center;
+    color: #999;
+}
+
+.empty-state p {
+    font-size: 1rem;
+    margin: 0.5rem 0;
+}
+
+/* ==================== 통계 요약 ==================== */
+.stats-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 50px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ff6b6b, #f59e0b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ==================== 최근 기록 섹션 ==================== */
+.recent-entries {
+    animation: fadeInUp 0.6s ease-out 0.3s backwards;
+}
+
+.recent-entries h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.entries-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.entry-item {
+    background: white;
+    border-radius: 40px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.entry-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.entry-content {
+    flex: 1;
+}
+
+.entry-date {
+    font-size: 0.8rem;
+    color: #999;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.entry-text {
+    font-size: 0.95rem;
+    color: #333;
+    margin-bottom: 0.8rem;
+    line-height: 1.5;
+}
+
+.entry-emotion {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.entry-emotion-emoji {
+    font-size: 1.2rem;
+}
+
+.entry-emotion-name {
+    color: #ff6b6b;
+    font-weight: 600;
+}
+
+.entry-emotion-temp {
+    color: #f59e0b;
+    font-weight: 600;
+}
+
+.entry-delete {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background-color: #fff0f0;
+    color: #ff6b6b;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.entry-delete:hover {
+    background-color: #ff6b6b;
+    color: white;
+}
+
+.empty-entries {
+    text-align: center;
+    color: #999;
+    padding: 2rem;
+    font-size: 0.95rem;
+}
+
+/* ==================== 애니메이션 ==================== */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* ==================== 반응형 디자인 ==================== */
+@media (max-width: 768px) {
+    .title {
+        font-size: 2rem;
+    }
+
+    .chart-section,
+    .diary-section,
+    .recent-entries {
+        gap: 1.5rem;
+    }
+
+    .stats-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .entry-item {
+        flex-direction: column;
+    }
+
+    .emotion-result {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .emotion-icon {
+        font-size: 3rem;
+    }
+
+    .result-card {
+        padding: 1.5rem;
+    }
+}
+
+/* ==================== Chart.js 커스터마이징 ==================== */
+canvas {
+    max-height: 300px;
+}
