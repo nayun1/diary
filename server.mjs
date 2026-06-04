@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const server = http.createServer((req, res) => {
     // CORS 헤더 추가
@@ -17,14 +17,29 @@ const server = http.createServer((req, res) => {
     // API 엔드포인트
     if (req.url === '/api/config') {
         try {
-            const envPath = path.join(__dirname, '.env.local');
-            const envContent = fs.readFileSync(envPath, 'utf-8');
-            const match = envContent.match(/GEMINI_API_KEY=(.+)/);
+            let apiKey = null;
             
-            if (match && match[1] && !match[1].includes('여기에')) {
+            // 환경 변수에서 먼저 확인 (Vercel 배포용)
+            if (process.env.GEMINI_API_KEY) {
+                apiKey = process.env.GEMINI_API_KEY;
+            } else {
+                // 로컬 .env.local 파일에서 확인
+                try {
+                    const envPath = path.join(__dirname, '.env.local');
+                    const envContent = fs.readFileSync(envPath, 'utf-8');
+                    const match = envContent.match(/GEMINI_API_KEY=(.+)/);
+                    if (match && match[1] && !match[1].includes('여기에')) {
+                        apiKey = match[1].trim();
+                    }
+                } catch (e) {
+                    // .env.local 파일이 없으면 무시
+                }
+            }
+            
+            if (apiKey) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ 
-                    apiKey: match[1].trim(),
+                    apiKey: apiKey,
                     success: true 
                 }));
             } else {
