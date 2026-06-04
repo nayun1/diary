@@ -31,20 +31,8 @@ const server = http.createServer((req, res) => {
     // API 엔드포인트
     if (req.url === '/api/config') {
         try {
-            let apiKey = process.env.GEMINI_API_KEY;
-            
-            if (!apiKey) {
-                try {
-                    const envPath = path.join(__dirname, '.env.local');
-                    const envContent = fs.readFileSync(envPath, 'utf-8');
-                    const match = envContent.match(/GEMINI_API_KEY=(.+)/);
-                    if (match && match[1]) {
-                        apiKey = match[1].trim();
-                    }
-                } catch (e) {
-                    // .env.local 없음
-                }
-            }
+            // Vercel 환경 변수에서 API 키 가져오기
+            const apiKey = process.env.GEMINI_API_KEY;
             
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ 
