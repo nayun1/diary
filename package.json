@@ -4,6 +4,9 @@
   "description": "하루 한 줄 일기를 작성하면 AI가 감정을 분석하고 월별 통계를 시각화해주는 웹 기반 감정 일기장 서비스",
   "type": "module",
   "main": "server.mjs",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "start": "node server.mjs",
     "dev": "node server.mjs"
