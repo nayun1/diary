@@ -56,11 +56,20 @@ const server = http.createServer((req, res) => {
     fs.readFile(fullPath, (err, data) => {
         if (err) {
             if (err.code === 'ENOENT') {
-                // 404 → index.html 반환 (SPA)
-                fs.readFile(path.join(__dirname, 'index.html'), (e, indexData) => {
-                    res.writeHead(e ? 404 : 200, { 'Content-Type': 'text/html; charset=utf-8' });
-                    res.end(e ? '<h1>404</h1>' : indexData);
-                });
+                // 404 처리
+                // HTML 파일이 아니면 404 에러 반환 (CSS, JS 등)
+                const ext = path.extname(fullPath).toLowerCase();
+                if (ext === '.html' || filePath === '/') {
+                    // HTML 요청이면 index.html 반환 (SPA)
+                    fs.readFile(path.join(__dirname, 'index.html'), (e, indexData) => {
+                        res.writeHead(e ? 404 : 200, { 'Content-Type': 'text/html; charset=utf-8' });
+                        res.end(e ? '<h1>404</h1>' : indexData);
+                    });
+                } else {
+                    // CSS, JS 등 정적 파일은 404 반환
+                    res.writeHead(404, { 'Content-Type': 'text/plain' });
+                    res.end('404 Not Found');
+                }
             } else {
                 res.writeHead(500);
                 res.end('Server Error');
