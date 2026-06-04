@@ -1,6 +1,3 @@
 {
-  "version": 2,
-  "buildCommand": "echo 'build'",
-  "outputDirectory": ".",
-  "framework": "nodejs"
+  "version": 2
 }
