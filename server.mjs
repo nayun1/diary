@@ -75,7 +75,18 @@ const server = http.createServer((req, res) => {
                 res.end('Server Error');
             }
         } else {
-            res.writeHead(200, { 'Content-Type': getMimeType(fullPath) });
+            const mimeType = getMimeType(fullPath);
+            const headers = { 'Content-Type': mimeType };
+            
+            // CSS, JS 파일은 캐시 활성화
+            const ext = path.extname(fullPath).toLowerCase();
+            if (ext === '.css' || ext === '.js') {
+                headers['Cache-Control'] = 'public, max-age=3600, must-revalidate';
+            } else {
+                headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+            }
+            
+            res.writeHead(200, headers);
             res.end(data);
         }
     });
