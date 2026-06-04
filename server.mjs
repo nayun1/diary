@@ -66,7 +66,7 @@ const server = http.createServer((req, res) => {
 
     // 파일 확장자 확인
     const ext = path.extname(filePath);
-    let contentType = 'text/html';
+    let contentType = 'text/html; charset=utf-8';
 
     switch (ext) {
         case '.js':
@@ -97,8 +97,16 @@ const server = http.createServer((req, res) => {
     fs.readFile(filePath, (err, data) => {
         if (err) {
             if (err.code === 'ENOENT') {
-                res.writeHead(404, { 'Content-Type': 'text/html' });
-                res.end('<h1>404 - 파일을 찾을 수 없습니다</h1>', 'utf-8');
+                // 파일 없으면 index.html 반환 (SPA 지원)
+                fs.readFile(path.join(__dirname, 'index.html'), (indexErr, indexData) => {
+                    if (indexErr) {
+                        res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
+                        res.end('<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><h1>404 - 파일을 찾을 수 없습니다</h1></body></html>', 'utf-8');
+                    } else {
+                        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+                        res.end(indexData);
+                    }
+                });
             } else {
                 res.writeHead(500);
                 res.end('서버 오류', 'utf-8');
