@@ -1,0 +1,7 @@
+.git
+.gitignore
+.env
+.env.local
+node_modules
+README.md
+VERCEL_DEPLOYMENT.md
