@@ -1,32 +1,6 @@
 {
   "version": 2,
-  "headers": [
-    {
-      "source": "/style.css",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/app.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    }
-  ]
+  "buildCommand": "echo 'build'",
+  "outputDirectory": ".",
+  "framework": "nodejs"
 }
