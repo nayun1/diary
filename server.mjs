@@ -8,8 +8,22 @@ const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 3000;
 
+const mimeTypes = {
+    '.html': 'text/html; charset=utf-8',
+    '.css': 'text/css; charset=utf-8',
+    '.js': 'application/javascript; charset=utf-8',
+    '.json': 'application/json',
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.gif': 'image/gif',
+    '.svg': 'image/svg+xml',
+    '.woff': 'font/woff',
+    '.woff2': 'font/woff2'
+};
+
 const server = http.createServer((req, res) => {
-    // CORS 헤더 추가
+    // CORS 헤더
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -17,101 +31,74 @@ const server = http.createServer((req, res) => {
     // API 엔드포인트
     if (req.url === '/api/config') {
         try {
-            let apiKey = null;
+            let apiKey = process.env.GEMINI_API_KEY;
             
-            // 환경 변수에서 먼저 확인 (Vercel 배포용)
-            if (process.env.GEMINI_API_KEY) {
-                apiKey = process.env.GEMINI_API_KEY;
-            } else {
-                // 로컬 .env.local 파일에서 확인
+            if (!apiKey) {
                 try {
                     const envPath = path.join(__dirname, '.env.local');
                     const envContent = fs.readFileSync(envPath, 'utf-8');
                     const match = envContent.match(/GEMINI_API_KEY=(.+)/);
-                    if (match && match[1] && !match[1].includes('여기에')) {
+                    if (match && match[1]) {
                         apiKey = match[1].trim();
                     }
                 } catch (e) {
-                    // .env.local 파일이 없으면 무시
+                    // .env.local 없음
                 }
             }
             
-            if (apiKey) {
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ 
-                    apiKey: apiKey,
-                    success: true 
-                }));
-            } else {
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ 
-                    apiKey: null,
-                    success: false,
-                    message: 'API 키가 설정되지 않았습니다'
-                }));
-            }
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ 
+                apiKey: apiKey || null,
+                success: !!apiKey
+            }));
         } catch (error) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ 
-                success: false,
-                message: error.message 
-            }));
+            res.end(JSON.stringify({ success: false, message: error.message }));
         }
         return;
     }
 
-    // 기본 경로
-    let filePath = req.url === '/' ? '/index.html' : req.url;
-    filePath = path.join(__dirname, filePath);
+    // 정적 파일 서빙
+    let requestPath = req.url.split('?')[0]; // 쿼리 문자열 제거
+    let filePath = requestPath === '/' ? '/index.html' : requestPath;
+    let fullPath = path.join(__dirname, filePath);
 
-    // 파일 확장자 확인
-    const ext = path.extname(filePath);
-    let contentType = 'text/html; charset=utf-8';
-
-    switch (ext) {
-        case '.js':
-            contentType = 'application/javascript';
-            break;
-        case '.css':
-            contentType = 'text/css';
-            break;
-        case '.json':
-            contentType = 'application/json';
-            break;
-        case '.png':
-            contentType = 'image/png';
-            break;
-        case '.jpg':
-        case '.jpeg':
-            contentType = 'image/jpeg';
-            break;
-        case '.gif':
-            contentType = 'image/gif';
-            break;
-        case '.svg':
-            contentType = 'image/svg+xml';
-            break;
+    // 디렉토리 체크 보안
+    try {
+        const realPath = path.resolve(fullPath);
+        const dirPath = path.resolve(__dirname);
+        if (!realPath.startsWith(dirPath)) {
+            res.writeHead(403, { 'Content-Type': 'text/plain' });
+            res.end('Forbidden');
+            return;
+        }
+    } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.end('Bad Request');
+        return;
     }
 
-    // 파일 읽기 및 전송
-    fs.readFile(filePath, (err, data) => {
+    // 파일 읽기
+    fs.readFile(fullPath, (err, data) => {
         if (err) {
             if (err.code === 'ENOENT') {
-                // 파일 없으면 index.html 반환 (SPA 지원)
+                // 파일 없으면 index.html 반환 (SPA)
                 fs.readFile(path.join(__dirname, 'index.html'), (indexErr, indexData) => {
                     if (indexErr) {
                         res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
-                        res.end('<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><h1>404 - 파일을 찾을 수 없습니다</h1></body></html>', 'utf-8');
+                        res.end('<h1>404 - 파일을 찾을 수 없습니다</h1>');
                     } else {
                         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
                         res.end(indexData);
                     }
                 });
             } else {
-                res.writeHead(500);
-                res.end('서버 오류', 'utf-8');
+                res.writeHead(500, { 'Content-Type': 'text/plain' });
+                res.end('Internal Server Error');
             }
         } else {
+            const ext = path.extname(fullPath).toLowerCase();
+            const contentType = mimeTypes[ext] || 'application/octet-stream';
             res.writeHead(200, { 'Content-Type': contentType });
             res.end(data);
         }
@@ -119,7 +106,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-    console.log(`🌡️ 마음 온도 서버가 실행 중입니다!`);
-    console.log(`📱 브라우저에서 http://localhost:${PORT} 로 접속하세요`);
-    console.log(`⚙️  서버를 종료하려면 Ctrl + C를 입력하세요`);
+    console.log(`🌡️ 마음 온도 서버가 포트 ${PORT}에서 실행 중입니다!`);
 });
